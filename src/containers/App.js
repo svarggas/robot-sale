@@ -31,7 +31,7 @@ function App() {
       <div className='tc'>
         <h1 className='f1'>Robot Sale</h1>
         <h3 className='f3' style={{ marginTop:'-30px' }}>
-          Dont miss a oportunity, prices <u>always</u> chaging, literally
+          Dont miss a oportunity, prices <u>always</u> changing, literally
         </h3>
         
         <SearchBox searchChange={onSearchChange}/>
