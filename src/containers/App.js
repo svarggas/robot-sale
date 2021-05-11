@@ -1,48 +1,45 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
 import './App.css';
 
-class App extends Component {
-  constructor() {
-    super()
-    this.state = {
-      robots: [],
-      searchfield: ''
-    }
-  }
+function App() {
 
-  componentDidMount() {
+  // State with hooks
+  const [robots, setRobots] = useState([])
+  const [searchfield, setSearchfield] = useState('')
+
+  //Like ComponentDidMount, run once 
+  // Because of the second parameter being a empty array 
+  useEffect( () => {
     fetch('https://jsonplaceholder.typicode.com/users')
       .then(response=> response.json())
-      .then(users => {this.setState({ robots: users})});
+      .then(users => {setRobots(users)});
+  },[])
+
+  const onSearchChange = (event) => {
+    setSearchfield(event.target.value)
   }
 
-  onSearchChange = (event) => {
-    this.setState({ searchfield: event.target.value })
-  }
+  const filteredRobots = robots.filter(robot =>{
+    return robot.name.toLowerCase().includes(searchfield.toLowerCase());
+  })
 
-  render() {
-    const { robots, searchfield } = this.state;
-    const filteredRobots = robots.filter(robot =>{
-      return robot.name.toLowerCase().includes(searchfield.toLowerCase());
-    })
-    return !robots.length ? <h1>Loading</h1> :
-      (
-        <div className='tc'>
-          <h1 className='f1'>Robot Sale</h1>
-          <h3 className='f3' style={{ marginTop:'-30px' }}>
-            Dont miss a oportunity, prices <u>always</u> chaging, literally
-          </h3>
-          
-          <SearchBox searchChange={this.onSearchChange}/>
-          <Scroll>
-            <CardList robots={filteredRobots} />
-          </Scroll>
-        </div>
-      );
-  }
+  return !robots.length ? <h1>Loading</h1> :
+    (
+      <div className='tc'>
+        <h1 className='f1'>Robot Sale</h1>
+        <h3 className='f3' style={{ marginTop:'-30px' }}>
+          Dont miss a oportunity, prices <u>always</u> chaging, literally
+        </h3>
+        
+        <SearchBox searchChange={onSearchChange}/>
+        <Scroll>
+          <CardList robots={filteredRobots} />
+        </Scroll>
+      </div>
+    );
 }
 
 export default App;
