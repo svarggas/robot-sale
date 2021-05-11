@@ -5,3 +5,4 @@ Galery of robots in sale, powered by 2 API's:
 2. :bookmark_tabs:, https://jsonplaceholder.typicode.com
 
 Visit
+https://robotsale.netlify.app
