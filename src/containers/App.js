@@ -1,45 +1,57 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
 import './App.css';
 
-function App() {
+import { requestRobots, setSearchfield } from '../actions'
+import { render } from 'react-dom';
 
-  // State with hooks
-  const [robots, setRobots] = useState([])
-  const [searchfield, setSearchfield] = useState('')
+const mapStateToProps = state => {
+  return {
+    searchField: state.searchRobots.searchField,
+    robots: state.requestRobots.robots,
+    isPending: state.requestRobots.isPending,
+    error: state.requestRobots.error
+  }
+} 
 
-  //Like ComponentDidMount, run once 
-  // Because of the second parameter being a empty array 
-  useEffect( () => {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(response=> response.json())
-      .then(users => {setRobots(users)});
-  },[])
+const mapDispatchToProps = dispatch => {
+  return {
+    onSearchChange: event => dispatch(setSearchfield(event.target.value)),
+    onRequestRobots: () => dispatch(requestRobots())
+  }
+} 
 
-  const onSearchChange = (event) => {
-    setSearchfield(event.target.value)
+class App extends React.Component {
+
+  componentDidMount() {
+    this.props.onRequestRobots()
   }
 
-  const filteredRobots = robots.filter(robot =>{
-    return robot.name.toLowerCase().includes(searchfield.toLowerCase());
-  })
+  render(){
+    const { searchField, onSearchChange, robots, isPending } = this.props;
+    const filteredRobots = robots.filter(robot =>{
+      return robot.name.toLowerCase().includes(searchField.toLowerCase());
+    })
 
-  return !robots.length ? <h1>Loading</h1> :
-    (
-      <div className='tc'>
-        <h1 className='f1'>Robot Sale</h1>
-        <h3 className='f3' style={{ marginTop:'-30px' }}>
-          Dont miss a oportunity, prices <u>always</u> changing, literally
-        </h3>
-        
-        <SearchBox searchChange={onSearchChange}/>
-        <Scroll>
-          <CardList robots={filteredRobots} />
-        </Scroll>
-      </div>
-    );
+    return isPending ? <h1>Loading...</h1> :
+      (
+        <div className='tc'>
+          <h1 className='f1'>Robot Sale</h1>
+          <h3 className='f3' style={{ marginTop:'-30px' }}>
+            Dont miss a oportunity, prices <u>always</u> changing, literally
+          </h3>
+          
+          <SearchBox searchChange={onSearchChange}/>
+          <Scroll>
+            <CardList robots={filteredRobots} />
+          </Scroll>
+        </div>
+      );
+  }
+
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
